@@ -1,3 +1,4 @@
+https://v3.vuejs.org/guide/custom-directive.html#custom-directives
 import { createApp } from 'vue'
 import Loading from './loading'
 
