@@ -5,9 +5,15 @@
     </div>
     <h1 class="title">{{title}}</h1>
     <div class="bg-image" :style="bgImageStyle" ref="bgImage">
-      <div class="filter"></div>
+      <div class="filter" :style="filterStyle"></div>
     </div>
-    <scroll class="list" :style="scrollStyle" v-loading="loading">
+    <scroll
+      class="list"
+      :style="scrollStyle"
+      v-loading="loading"
+      :probe-type="3"
+      @scroll="onScroll"
+    >
       <div class="song-list-wrapper">
         <song-list :songs="songs"></song-list>
       </div>
@@ -18,6 +24,11 @@
 <script>
 import SongList from '@/components/base/song-list/song-list'
 import Scroll from '@/components/base/scroll/scroll'
+import storage from 'good-storage'
+import { SINGER_KEY } from '@/assets/js/constant'
+
+const RESERVED_HEIGHT = 40
+
 export default {
   name: 'music-list',
   components: {
@@ -37,28 +48,68 @@ export default {
   },
   data () {
     return {
-      imageHeight: 0
+      imageHeight: 0,
+      scrollY: 0,
+      maxTranslateY: 0
     }
   },
   computed: {
     bgImageStyle () {
+      const scrollY = this.scrollY
+      let zIndex = 0
+      let paddingTop = '70%'
+      let height = 0
+      let translateZ = 0
+
+      if (scrollY > this.maxTranslateY) {
+        zIndex = 10
+        paddingTop = 0
+        height = `${RESERVED_HEIGHT}px`
+        translateZ = 1
+      }
+
+      let scale = 1
+      if (scrollY < 0) {
+        scale = 1 + Math.abs(scrollY / this.imageHeight)
+      }
+
       return {
-        backgroundImage: `url(${this.pic})`
+        zIndex,
+        paddingTop,
+        height,
+        backgroundImage: `url(${this.pic})`,
+        transform: `scale(${scale})translateZ(${translateZ}px)`
       }
     },
     scrollStyle () {
       return {
         top: `${this.imageHeight}px`
       }
+    },
+    filterStyle () {
+      let blur = 0
+      const scrollY = this.scrollY
+      const imageHeight = this.imageHeight
+      if (scrollY >= 0) {
+        blur = Math.min(this.maxTranslateY / imageHeight, scrollY / imageHeight) * 20
+      }
+      return {
+        backdropFilter: `blur(${blur}px)`
+      }
     }
   },
   methods: {
     goBack () {
       this.$router.back()
+    },
+    onScroll (pos) {
+      this.scrollY = -pos.y
     }
+
   },
   mounted () {
     this.imageHeight = this.$refs.bgImage.clientHeight
+    this.maxTranslateY = this.imageHeight - RESERVED_HEIGHT
   }
 }
 </script>
@@ -96,8 +147,6 @@ export default {
   .bg-image {
     position: relative;
     width: 100%;
-    height: 0;
-    padding-top: 70%;
     transform-origin: top;
     background-size: cover;
     .play-btn-wrapper {
