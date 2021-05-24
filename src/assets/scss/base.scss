@@ -8,3 +8,14 @@ html {
   background: $color-background;
   color: $color-text;
 }
+
+// https://next.router.vuejs.org/guide/advanced/transitions.html
+.slide-enter-active,
+.slide-leave-active {
+  transition: all 0.3s
+}
+
+.slide-enter-from,
+.slide-leave-to {
+  transform: translate3d(100%, 0, 0)
+}
