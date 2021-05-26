@@ -1,3 +1,5 @@
+
+// 随机shuffle算法
 export function shuffle (source) {
   const arr = source.slice()
   for (let i = 0; i < arr.length; i++) {
@@ -15,4 +17,12 @@ function swap (arr, i, j) {
   const t = arr[i]
   arr[i] = arr[j]
   arr[j] = t
+}
+
+// 换算毫秒数
+export function formatTime (interval) {
+  interval = interval | 0
+  const minute = ((interval / 60 | 0) + '').padStart(2, '0')
+  const second = (interval % 60 + '').padStart(2, '0')
+  return `${minute}:${second}`
 }
