@@ -19,3 +19,26 @@ export function processSongs (songs) {
     })
   })
 }
+
+const lyricMap = {}
+
+export function getLyric (song) {
+  // 有lyric直接返回
+  if (song.lyric) {
+    return Promise.resolve(song.lyric)
+  }
+  // lyricMap有mid
+  const mid = song.mid
+  const lyric = lyricMap[mid]
+  if (lyric) {
+    return Promise.resolve(lyric)
+  }
+  // 从没请求过
+  return get('/api/getLyric', {
+    mid
+  }).then((result) => {
+    const lyric = result ? result.lyric : '[00: 00: 00]この曲の歌詞は利用できません'
+    lyricMap[mid] = lyric
+    return lyric
+  })
+}
