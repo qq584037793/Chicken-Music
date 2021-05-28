@@ -1,5 +1,5 @@
 <template>
-  <div class="player">
+  <div class="player" v-show="playlist.length">
     <div class="normal-player" v-show="fullScreen">
       <div class="background">
         <img :src="currentSong.pic" />
@@ -11,8 +11,13 @@
         <h1 class="title">{{currentSong.name}}</h1>
         <h2 class="subtitle">{{currentSong.singer}}</h2>
       </div>
-      <div class="middle">
-        <div class="middle-l">
+      <div
+        class="middle"
+        @touchstart.prevent="onMiddleTouchStart"
+        @touchmove.prevent="onMiddleTouchMove"
+        @touchend.prevent="onMiddleTouchEnd"
+      >
+        <div class="middle-l" :style="middleLStyle">
           <div class="cd-wrapper">
             <div class="cd" ref="cdRef">
               <img class="image" :src="currentSong.pic" :class="cdCls" ref="cdImageRef" />
@@ -22,7 +27,7 @@
             <div class="playing-lyric">{{playingLyric}}</div>
           </div>
         </div>
-        <scroll class="middle-r" ref="lyricScrollRef">
+        <scroll class="middle-r" ref="lyricScrollRef" :style="middleRStyle">
           <div class="lyric-wrapper">
             <div v-if="currentLyric" ref="lyricListRef">
               <p
@@ -39,6 +44,10 @@
         </scroll>
       </div>
       <div class="bottom">
+        <div class="dot-wrapper">
+          <span class="dot" :class="{'active':currentShow==='cd'}"></span>
+          <span class="dot" :class="{'active':currentShow==='lyric'}"></span>
+        </div>
         <div class="progress-wrapper">
           <span class="time time-l">{{formatTime(currentTime)}}</span>
           <div class="progress-bar-wrapper">
@@ -70,6 +79,7 @@
         </div>
       </div>
     </div>
+    <mini-player :progress="progress" :togglePlay="togglePlay"></mini-player>
     <audio
       ref="audioRef"
       @pause="pause"
@@ -83,12 +93,14 @@
 
 <script>
 import { useStore } from 'vuex'
-import { computed, watch, ref } from 'vue'
+import { computed, watch, ref, nextTick } from 'vue'
 import useMode from './use-mode'
 import useFavorite from './use-favorite'
 import useCd from './use-cd'
 import useLyric from './use-lyric'
+import useMiddleIneractive from './use-middle-interactive'
 import ProgressBar from './progress-bar'
+import MiniPlayer from './mini-player'
 import Scroll from '@/components/base/scroll/scroll'
 import { formatTime } from '@/assets/js/util'
 import { PLAY_MODE } from '@/assets/js/constant'
@@ -97,11 +109,13 @@ export default {
   name: 'player',
   components: {
     ProgressBar,
-    Scroll
+    Scroll,
+    MiniPlayer
   },
   setup () {
     // data
     const audioRef = ref(null)
+    const barRef = ref(null)
     const songReady = ref(false)
     const currentTime = ref(0)
     let progressChanging = false
@@ -118,6 +132,7 @@ export default {
     const { getFavoriteIcon, toggleFavorite } = useFavorite()
     const { cdCls, cdRef, cdImageRef } = useCd()
     const { currentLyric, currentLineNum, playLyric, stopLyric, lyricScrollRef, lyricListRef, pureMusicLyric, playingLyric } = useLyric({ songReady, currentTime })
+    const { currentShow, middleLStyle, middleRStyle, onMiddleTouchStart, onMiddleTouchMove, onMiddleTouchEnd } = useMiddleIneractive()
 
     // conputed
     const playlist = computed(() => store.state.playlist)
@@ -155,6 +170,13 @@ export default {
       } else {
         audioEl.pause()
         stopLyric()
+      }
+    })
+    // 监听全屏切换后进度表改变
+    watch(fullScreen, async (newFullScreen) => {
+      if (newFullScreen) {
+        await nextTick()
+        barRef.value.setOffset(progress.value)
       }
     })
 
@@ -263,7 +285,9 @@ export default {
       audioRef,
       fullScreen,
       currentSong,
+      barRef,
       currentTime,
+      playlist,
       goBack,
       playIcon,
       togglePlay,
@@ -296,7 +320,14 @@ export default {
       lyricScrollRef,
       lyricListRef,
       pureMusicLyric,
-      playingLyric
+      playingLyric,
+      // middle
+      currentShow,
+      middleLStyle,
+      middleRStyle,
+      onMiddleTouchStart,
+      onMiddleTouchMove,
+      onMiddleTouchEnd
     }
   }
 }
@@ -443,6 +474,24 @@ export default {
       position: absolute;
       bottom: 50px;
       width: 100%;
+      .dot-wrapper {
+        text-align: center;
+        font-size: 0;
+        .dot {
+          display: inline-block;
+          vertical-align: middle;
+          margin: 0 4px;
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: $color-text-l;
+          &.active {
+            width: 20px;
+            border-radius: 5px;
+            background: $color-text-ll;
+          }
+        }
+      }
       .progress-wrapper {
         display: flex;
         align-items: center;
