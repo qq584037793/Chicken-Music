@@ -447,4 +447,5 @@ function registerLyric (app) {
     })
   })
 }
+
 module.exports = registerRouter
