@@ -3,50 +3,142 @@
     <div class="search-input-wrapper">
       <search-input v-model="query"></search-input>
     </div>
-    <div class="search-content">
-      <div class="hot-keys">
-        <h1 class="title">人気検索</h1>
-        <ul>
-          <li class="item" v-for="item in hotKeys" :key="item.id" @click="addQuery(item.key)">
-            <span>{{item.key}}</span>
-          </li>
-        </ul>
+    <scroll ref="scrollRef" class="search-content" v-show="!query">
+      <div>
+        <div class="hot-keys">
+          <h1 class="title">人気検索</h1>
+          <ul>
+            <li class="item" v-for="item in hotKeys" :key="item.id" @click="addQuery(item.key)">
+              <span>{{item.key}}</span>
+            </li>
+          </ul>
+        </div>
+        <div class="search-history" v-show="searchHistory.length">
+          <h1 class="title">
+            <span class="text">検索履歴</span>
+            <span class="clear" @click="showConfirm">
+              <i class="icon-clear"></i>
+            </span>
+          </h1>
+          <confirm
+            ref="confirmRef"
+            text="検索履歴をすべて消去するか"
+            confirm-btn-text="Yes"
+            @confirm="clearSearch"
+          ></confirm>
+          <search-list :searches="searchHistory" @select="addQuery" @delete="deleteSearch"></search-list>
+        </div>
       </div>
+    </scroll>
+    <div class="search-result" v-show="query">
+      <suggest :query="query" @select-song="selectSong" @select-singer="selectSinger"></suggest>
     </div>
+    <router-view v-slot="{ Component }">
+      <transition appear name="slide">
+        <component :is="Component" :data="selectedSinger" />
+      </transition>
+    </router-view>
   </div>
 </template>
+
 <script>
 import SearchInput from '@/components/search/search-input'
-import { ref } from 'vue'
+import Suggest from '@/components/search/suggest'
+import SearchList from '@/components/search/search-list'
+import Scroll from '@/components/base/scroll/scroll'
+import Confirm from '@/components/base/confirm/confirm'
+import { ref, computed, watch, nextTick } from 'vue'
 import { getHotKeys } from '@/service/search'
+import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
+import storage from 'good-storage'
+import { SINGER_KEY } from '@/assets/js/constant'
+import useSearchHistory from '@/components/search/use-search-history'
+
 export default {
   name: 'search',
   components: {
-    SearchInput
+    Confirm,
+    Scroll,
+    SearchList,
+    SearchInput,
+    Suggest
   },
   setup () {
     const query = ref('')
     const hotKeys = ref([])
+    const selectedSinger = ref(null)
+    const scrollRef = ref(null)
+    const confirmRef = ref(null)
+
+    const store = useStore()
+    const searchHistory = computed(() => store.state.searchHistory)
+
+    const router = useRouter()
+
+    const { saveSearch, deleteSearch, clearSearch } = useSearchHistory()
 
     getHotKeys().then((result) => {
       hotKeys.value = result.hotKeys
     })
 
-    function addQuery (s) {
-      query.value = s
+    watch(query, async (newQuery) => {
+      if (!newQuery) {
+        await nextTick()
+        refreshScroll()
+      }
+    })
+
+    function refreshScroll () {
+      scrollRef.value.scroll.refresh()
     }
 
-    // watch(query, (val) => {
-    //   console.log(val)
-    // })
+    function addQuery (s) {
+      query.value = s.trim()
+    }
+
+    function selectSong (song) {
+      saveSearch(query.value)
+      store.dispatch('addSong', song)
+    }
+
+    function selectSinger (singer) {
+      saveSearch(query.value)
+      selectedSinger.value = singer
+      cacheSinger(singer)
+
+      router.push({
+        path: `/search/${singer.mid}`
+      })
+    }
+
+    function cacheSinger (singer) {
+      storage.session.set(SINGER_KEY, singer)
+    }
+
+    function showConfirm () {
+      confirmRef.value.show()
+    }
+
     return {
+      scrollRef,
+      confirmRef,
       query,
       hotKeys,
-      addQuery
+      selectedSinger,
+      searchHistory,
+      addQuery,
+      selectSong,
+      selectSinger,
+      showConfirm,
+      // searchHistory
+      deleteSearch,
+      clearSearch
     }
   }
 }
 </script>
+
 <style lang="scss" scoped>
 .search {
   position: fixed;
@@ -78,6 +170,31 @@ export default {
         color: $color-text-d;
       }
     }
+    .search-history {
+      position: relative;
+      margin: 0 20px;
+      .title {
+        display: flex;
+        align-items: center;
+        height: 40px;
+        font-size: $font-size-medium;
+        color: $color-text-l;
+        .text {
+          flex: 1;
+        }
+        .clear {
+          @include extend-click();
+          .icon-clear {
+            font-size: $font-size-medium;
+            color: $color-text-d;
+          }
+        }
+      }
+    }
+  }
+  .search-result {
+    flex: 1;
+    overflow: hidden;
   }
 }
 </style>

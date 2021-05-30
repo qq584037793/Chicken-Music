@@ -37,3 +37,8 @@ export function remove (key, compare) {
 export function load (key) {
   return storage.get(key, [])
 }
+
+export function clear (key) {
+  storage.remove(key)
+  return []
+}

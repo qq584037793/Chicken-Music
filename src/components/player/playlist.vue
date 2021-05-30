@@ -66,6 +66,7 @@ export default {
     const listRef = ref(null)
     const removing = ref(false)
     const confirmRef = ref(null)
+    const addSongRef = ref(null)
 
     const store = useStore()
     const playlist = computed(() => store.state.playlist)
@@ -151,11 +152,13 @@ export default {
       store.dispatch('clearSongList')
       hide()
     }
+
     return {
       visible,
       confirmRef,
       store,
       scrollRef,
+      addSongRef,
       listRef,
       removing,
       playlist,
