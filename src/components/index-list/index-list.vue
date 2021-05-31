@@ -18,15 +18,15 @@
       class="shortcut"
       @touchstart.stop.prevent="onShortcutTouchStart"
       @touchmove.stop.prevent="onShortcutTouchMove"
-      @touchend.stop.prevent="onShortcutTouchEnd"
+      @touchend.stop.prevent
     >
       <ul>
         <li
-          v-for="(item,index) in shortcutList"
+          v-for="(item, index) in shortcutList"
           :key="item"
           :data-index="index"
           class="item"
-          :class="{'current':currentIndex ===index}"
+          :class="{'current':currentIndex===index}"
         >{{item}}</li>
       </ul>
     </div>
@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import Scroll from '@/components/base/scroll/scroll'
+import Scroll from '@/components/wrap-scroll/index'
 import useFixed from './use-fixed'
 import useShortcut from './use-shortcut'
 
@@ -61,13 +61,13 @@ export default {
     }
     return {
       onItemClick,
-      // from fixed
+      // fixed
       groupRef,
       onScroll,
       fixedTitle,
       fixedStyle,
       currentIndex,
-      // from shortcutList
+      // shortcut
       shortcutList,
       scrollRef,
       onShortcutTouchStart,

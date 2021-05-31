@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import Scroll from '@/components/base/scroll/scroll'
+import Scroll from '@/components/wrap-scroll'
 import { getTopList } from '@/service/top-list'
 import { TOP_KEY } from '@/assets/js/constant'
 import storage from 'good-storage'

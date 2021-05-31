@@ -4,11 +4,11 @@
       <i class="icon-back"></i>
     </div>
     <div class="switches-wrapper">
-      <switches :items="['我喜欢的', '最近播放']" v-model="currentIndex"></switches>
+      <switches :items="['お気に入り', '最近再生']" v-model="currentIndex"></switches>
     </div>
     <div class="play-btn" v-if="currentList.length" @click="random">
       <i class="icon-play"></i>
-      <span class="text">随机播放全部</span>
+      <span class="text">シャッフル再生</span>
     </div>
     <div class="list-wrapper">
       <scroll class="list-scroll" v-if="currentIndex===0">
@@ -27,7 +27,7 @@
 
 <script>
 import Switches from '@/components/base/switches/switches'
-import Scroll from '@/components/base/scroll/scroll'
+import Scroll from '@/components/wrap-scroll'
 import SongList from '@/components/base/song-list/song-list'
 import { mapState, mapActions } from 'vuex'
 

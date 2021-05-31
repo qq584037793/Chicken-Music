@@ -1,7 +1,7 @@
 import { PLAY_MODE } from '@/assets/js/constant'
 import { shuffle } from '@/assets/js/util'
 
-export function selectPlay ({ commit, state }, { list, index }) {
+export function selectPlay ({ commit }, { list, index }) {
   commit('setPlayMode', PLAY_MODE.sequence)
   commit('setSequenceList', list)
   commit('setPlayingState', true)
@@ -29,6 +29,7 @@ export function changeMode ({ commit, state, getters }, mode) {
   const index = state.playlist.findIndex((song) => {
     return song.id === currentId
   })
+
   commit('setCurrentIndex', index)
   commit('setPlayMode', mode)
 }
@@ -42,6 +43,7 @@ export function removeSong ({ commit, state }, song) {
   if (sequenceIndex < 0 || playIndex < 0) {
     return
   }
+
   sequenceList.splice(sequenceIndex, 1)
   playlist.splice(playIndex, 1)
 
@@ -54,7 +56,7 @@ export function removeSong ({ commit, state }, song) {
   commit('setPlaylist', playlist)
   commit('setCurrentIndex', currentIndex)
   if (!playlist.length) {
-    commit('setPlayState', false)
+    commit('setPlayingState', false)
   }
 }
 

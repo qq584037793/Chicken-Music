@@ -1,7 +1,7 @@
 <template>
   <div class="progress-bar" @click="onClick">
     <div class="bar-inner">
-      <div class="progress" :style="progressStyle" ref="progress"></div>
+      <div class="progress" ref="progress" :style="progressStyle"></div>
       <div
         class="progress-btn-wrapper"
         :style="btnStyle"
@@ -17,15 +17,16 @@
 
 <script>
 const progressBtnWidth = 16
+
 export default {
   name: 'progress-bar',
+  emits: ['progress-changing', 'progress-changed'],
   props: {
     progress: {
       type: Number,
       default: 0
     }
   },
-  emits: ['progress-changing', 'progress-changed'],
   data () {
     return {
       offset: 0

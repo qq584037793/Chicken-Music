@@ -34,6 +34,7 @@ export function remove (key, compare) {
   storage.set(key, items)
   return items
 }
+
 export function load (key) {
   return storage.get(key, [])
 }

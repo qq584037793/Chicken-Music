@@ -1,16 +1,16 @@
 <template>
   <transition name="mini">
-    <div class="mini-player" v-show="!fullScreen" @click="showNormalPlay">
+    <div class="mini-player" v-show="!fullScreen" @click="showNormalPlayer">
       <div class="cd-wrapper">
-        <div ref="cdRef" class="cd" :class="cdCls">
+        <div ref="cdRef" class="cd">
           <img ref="cdImageRef" width="40" height="40" :src="currentSong.pic" :class="cdCls" />
         </div>
       </div>
-      <div class="slider-wrapper" ref="sliderWrapperRef">
+      <div ref="sliderWrapperRef" class="slider-wrapper">
         <div class="slider-group">
           <div class="slider-page" v-for="song in playlist" :key="song.id">
-            <h2 class="name">{{currentSong.name}}</h2>
-            <p class="desc">{{currentSong.singer}}</p>
+            <h2 class="name">{{song.name}}</h2>
+            <p class="desc">{{song.singer}}</p>
           </div>
         </div>
       </div>
@@ -54,13 +54,13 @@ export default {
     const playlist = computed(() => store.state.playlist)
 
     const { cdCls, cdRef, cdImageRef } = useCd()
-    const { slider, sliderWrapperRef } = useMiniSlider()
+    const { sliderWrapperRef } = useMiniSlider()
 
     const miniPlayIcon = computed(() => {
       return playing.value ? 'icon-pause-mini' : 'icon-play-mini'
     })
 
-    function showNormalPlay () {
+    function showNormalPlayer () {
       store.commit('setFullScreen', true)
     }
 
@@ -69,19 +69,18 @@ export default {
     }
 
     return {
+      playlistRef,
       fullScreen,
       currentSong,
       playlist,
-      showNormalPlay,
       miniPlayIcon,
+      showNormalPlayer,
       showPlaylist,
-      playlistRef,
       // cd
       cdCls,
       cdRef,
       cdImageRef,
-      // slider
-      slider,
+      // mini-slider
       sliderWrapperRef
     }
   }

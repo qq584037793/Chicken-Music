@@ -1,6 +1,6 @@
 <template>
   <div class="singer-detail">
-    <music-list :songs="songs" :pic="pic" :title="title" :loading="loading"></music-list>
+    <music-list :songs="songs" :title="title" :pic="pic" :loading="loading"></music-list>
   </div>
 </template>
 
@@ -11,6 +11,7 @@ import { SINGER_KEY } from '@/assets/js/constant'
 
 export default createDetailComponent('singer-detail', SINGER_KEY, getSingerDetail)
 </script>
+
 <style lang="scss" scoped>
 .singer-detail {
   position: fixed;

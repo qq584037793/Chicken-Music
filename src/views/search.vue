@@ -44,8 +44,8 @@
 <script>
 import SearchInput from '@/components/search/search-input'
 import Suggest from '@/components/search/suggest'
-import SearchList from '@/components/search/search-list'
-import Scroll from '@/components/base/scroll/scroll'
+import SearchList from '@/components/base/search-list/search-list'
+import Scroll from '@/components/wrap-scroll'
 import Confirm from '@/components/base/confirm/confirm'
 import { ref, computed, watch, nextTick } from 'vue'
 import { getHotKeys } from '@/service/search'

@@ -1,4 +1,4 @@
-import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, nextTick, onMounted, onUnmounted, onActivated, onDeactivated } from 'vue'
 import { useStore } from 'vuex'
 import BScroll from '@better-scroll/core'
 import Slide from '@better-scroll/slide'
@@ -52,18 +52,28 @@ export default function useMiniSlider () {
         sliderVal.goToPage(newIndex, 0, 0)
       }
     })
+
     watch(playlist, async (newList) => {
-      if (sliderVal && slider.value && newList.length) {
+      if (sliderVal && sliderShow.value && newList.length) {
         await nextTick()
         sliderVal.refresh()
       }
     })
+  })
 
-    onUnmounted(() => {
-      if (slider.value) {
-        slider.value.destroy()
-      }
-    })
+  onUnmounted(() => {
+    if (slider.value) {
+      slider.value.destroy()
+    }
+  })
+
+  onActivated(() => {
+    slider.value.enable()
+    slider.value.refresh()
+  })
+
+  onDeactivated(() => {
+    slider.value.disable()
   })
 
   return {

@@ -25,9 +25,9 @@
           @touchend.prevent="onMiddleTouchEnd"
         >
           <div class="middle-l" :style="middleLStyle">
-            <div class="cd-wrapper" ref="cdWrapperRef">
-              <div class="cd" ref="cdRef">
-                <img class="image" :src="currentSong.pic" :class="cdCls" ref="cdImageRef" />
+            <div ref="cdWrapperRef" class="cd-wrapper">
+              <div ref="cdRef" class="cd">
+                <img ref="cdImageRef" class="image" :class="cdCls" :src="currentSong.pic" />
               </div>
             </div>
             <div class="playing-lyric-wrapper">
@@ -71,23 +71,23 @@
             <div class="icon i-left">
               <i @click="changeMode" :class="modeIcon"></i>
             </div>
-            <div class="icon i-left" :class="disableCLS">
-              <i class="icon-prev" @click="prev"></i>
+            <div class="icon i-left" :class="disableCls">
+              <i @click="prev" class="icon-prev"></i>
             </div>
-            <div class="icon i-center" :class="disableCLS">
-              <i :class="playIcon" @click="togglePlay"></i>
+            <div class="icon i-center" :class="disableCls">
+              <i @click="togglePlay" :class="playIcon"></i>
             </div>
-            <div class="icon i-right" :class="disableCLS">
-              <i class="icon-next" @click="next"></i>
+            <div class="icon i-right" :class="disableCls">
+              <i @click="next" class="icon-next"></i>
             </div>
             <div class="icon i-right">
-              <i :class="getFavoriteIcon(currentSong)" @click="toggleFavorite(currentSong)"></i>
+              <i @click="toggleFavorite(currentSong)" :class="getFavoriteIcon(currentSong)"></i>
             </div>
           </div>
         </div>
       </div>
     </transition>
-    <mini-player :progress="progress" :togglePlay="togglePlay"></mini-player>
+    <mini-player :progress="progress" :toggle-play="togglePlay"></mini-player>
     <audio
       ref="audioRef"
       @pause="pause"
@@ -106,12 +106,12 @@ import useMode from './use-mode'
 import useFavorite from './use-favorite'
 import useCd from './use-cd'
 import useLyric from './use-lyric'
-import useMiddleIneractive from './use-middle-interactive'
-import ProgressBar from './progress-bar'
-import MiniPlayer from './mini-player'
+import useMiddleInteractive from './use-middle-interactive'
 import useAnimation from './use-animation'
 import usePlayHistory from './use-play-history'
+import ProgressBar from './progress-bar'
 import Scroll from '@/components/base/scroll/scroll'
+import MiniPlayer from './mini-player'
 import { formatTime } from '@/assets/js/util'
 import { PLAY_MODE } from '@/assets/js/constant'
 
@@ -141,8 +141,10 @@ export default {
     const { modeIcon, changeMode } = useMode()
     const { getFavoriteIcon, toggleFavorite } = useFavorite()
     const { cdCls, cdRef, cdImageRef } = useCd()
-    const { currentLyric, currentLineNum, playLyric, stopLyric, lyricScrollRef, lyricListRef, pureMusicLyric, playingLyric } = useLyric({ songReady, currentTime })
-    const { currentShow, middleLStyle, middleRStyle, onMiddleTouchStart, onMiddleTouchMove, onMiddleTouchEnd } = useMiddleIneractive()
+    const { currentLyric, currentLineNum, pureMusicLyric, playingLyric, lyricScrollRef, lyricListRef, playLyric, stopLyric } = useLyric({
+      songReady, currentTime
+    })
+    const { currentShow, middleLStyle, middleRStyle, onMiddleTouchStart, onMiddleTouchMove, onMiddleTouchEnd } = useMiddleInteractive()
     const { cdWrapperRef, enter, afterEnter, leave, afterLeave } = useAnimation()
     const { savePlay } = usePlayHistory()
 
@@ -156,7 +158,8 @@ export default {
     const progress = computed(() => {
       return currentTime.value / currentSong.value.duration
     })
-    const disableCLS = computed(() => {
+
+    const disableCls = computed(() => {
       return songReady.value ? '' : 'disable'
     })
 
@@ -172,6 +175,7 @@ export default {
       audioEl.play()
       store.commit('setPlayingState', true)
     })
+
     watch(playing, (newPlaying) => {
       if (!songReady.value) {
         return
@@ -210,10 +214,10 @@ export default {
 
     function prev () {
       const list = playlist.value
-
       if (!songReady.value || !list.length) {
         return
       }
+
       if (list.length === 1) {
         loop()
       } else {
@@ -224,11 +228,13 @@ export default {
         store.commit('setCurrentIndex', index)
       }
     }
+
     function next () {
       const list = playlist.value
       if (!songReady.value || !list.length) {
         return
       }
+
       if (list.length === 1) {
         loop()
       } else {
@@ -239,6 +245,7 @@ export default {
         store.commit('setCurrentIndex', index)
       }
     }
+
     function loop () {
       const audioEl = audioRef.value
       audioEl.currentTime = 0
@@ -289,24 +296,24 @@ export default {
         next()
       }
     }
+
     return {
       audioRef,
-      fullScreen,
-      currentSong,
       barRef,
+      fullScreen,
       currentTime,
+      currentSong,
       playlist,
-      goBack,
       playIcon,
+      disableCls,
+      progress,
+      goBack,
       togglePlay,
-      loop,
       pause,
       prev,
       next,
       ready,
       error,
-      disableCLS,
-      progress,
       updateTime,
       formatTime,
       onProgressChanging,
@@ -325,11 +332,11 @@ export default {
       // lyric
       currentLyric,
       currentLineNum,
-      lyricScrollRef,
-      lyricListRef,
       pureMusicLyric,
       playingLyric,
-      // middle
+      lyricScrollRef,
+      lyricListRef,
+      // middle-interactive
       currentShow,
       middleLStyle,
       middleRStyle,
@@ -341,9 +348,7 @@ export default {
       enter,
       afterEnter,
       leave,
-      afterLeave,
-      // history
-      savePlay
+      afterLeave
     }
   }
 }

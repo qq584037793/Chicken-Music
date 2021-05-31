@@ -40,6 +40,7 @@ export default function useFixed (props) {
       if (newY >= heightTop && newY < heightBottom) {
         currentIndex.value = i
         distance.value = heightBottom - newY
+        break
       }
     }
   })

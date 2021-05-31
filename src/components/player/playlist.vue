@@ -54,26 +54,26 @@
 </template>
 
 <script>
-import { computed, ref, nextTick, watch } from 'vue'
+import Scroll from '@/components/base/scroll/scroll'
+import Confirm from '@/components/base/confirm/confirm'
+import AddSong from '@/components/add-song/add-song'
+import { ref, computed, nextTick, watch } from 'vue'
 import { useStore } from 'vuex'
 import useMode from './use-mode'
 import useFavorite from './use-favorite'
-import Scroll from '@/components/base/scroll/scroll'
-import confirm from '@/components/base/confirm/confirm'
-import AddSong from '@/components/add-song/add-song'
 
 export default {
   name: 'playlist',
   components: {
     Scroll,
-    confirm,
+    Confirm,
     AddSong
   },
   setup () {
     const visible = ref(false)
+    const removing = ref(false)
     const scrollRef = ref(null)
     const listRef = ref(null)
-    const removing = ref(false)
     const confirmRef = ref(null)
     const addSongRef = ref(null)
 
@@ -122,8 +122,8 @@ export default {
       if (index === -1) {
         return
       }
-
       const target = listRef.value.$el.children[index]
+
       scrollRef.value.scroll.scrollToElement(target, 300)
     }
 
@@ -132,9 +132,7 @@ export default {
       const index = playlist.value.findIndex((item) => {
         return song.id === item.id
       })
-      if (index === -1) {
-        return
-      }
+
       store.commit('setCurrentIndex', index)
       store.commit('setPlayingState', true)
     }
@@ -168,17 +166,16 @@ export default {
 
     return {
       visible,
-      confirmRef,
-      store,
-      scrollRef,
-      addSongRef,
-      listRef,
       removing,
+      scrollRef,
+      listRef,
+      confirmRef,
+      addSongRef,
       playlist,
       sequenceList,
+      getCurrentIcon,
       show,
       hide,
-      getCurrentIcon,
       selectItem,
       removeSong,
       showConfirm,

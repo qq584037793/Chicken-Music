@@ -24,6 +24,7 @@ export default function useShortList (props, groupRef) {
     touch.y2 = e.touches[0].pageY
     const delta = (touch.y2 - touch.y1) / ANCHOR_HEIGHT | 0
     const anchorIndex = touch.anchorIndex + delta
+
     scrollTo(anchorIndex)
   }
   // 滚动到指定index
