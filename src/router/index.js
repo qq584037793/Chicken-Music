@@ -6,6 +6,7 @@ import Search from '@/views/search'
 import SingerDetail from '@/views/singer-detail'
 import Album from '@/views/album'
 import ToDetail from '@/views/top-detail'
+import UserCenter from '@/views/user-center'
 
 const routes = [
   // 初期ページはrecommend
@@ -52,6 +53,10 @@ const routes = [
         component: SingerDetail
       }
     ]
+  },
+  {
+    path: '/user',
+    component: UserCenter
   }
 ]
 

@@ -31,6 +31,12 @@
               </li>
             </transition-group>
           </scroll>
+          <div class="list-add">
+            <div class="add" @click="showAddSong">
+              <i class="icon-add"></i>
+              <span class="text">曲を追加する</span>
+            </div>
+          </div>
           <div class="list-footer" @click.stop="hide">
             <span>閉じる</span>
           </div>
@@ -41,6 +47,7 @@
           text="プレイリストをクリアする"
           confirm-btn-text="Yes"
         ></confirm>
+        <add-song ref="addSongRef"></add-song>
       </div>
     </transition>
   </teleport>
@@ -53,12 +60,14 @@ import useMode from './use-mode'
 import useFavorite from './use-favorite'
 import Scroll from '@/components/base/scroll/scroll'
 import confirm from '@/components/base/confirm/confirm'
+import AddSong from '@/components/add-song/add-song'
 
 export default {
   name: 'playlist',
   components: {
     Scroll,
-    confirm
+    confirm,
+    AddSong
   },
   setup () {
     const visible = ref(false)
@@ -153,6 +162,10 @@ export default {
       hide()
     }
 
+    function showAddSong () {
+      addSongRef.value.show()
+    }
+
     return {
       visible,
       confirmRef,
@@ -170,6 +183,7 @@ export default {
       removeSong,
       showConfirm,
       confirmClear,
+      showAddSong,
       // mode
       modeIcon,
       modeText,
@@ -274,6 +288,25 @@ export default {
           &.disable {
             color: $color-theme-d;
           }
+        }
+      }
+    }
+    .list-add {
+      width: 140px;
+      margin: 20px auto 30px auto;
+      .add {
+        display: flex;
+        align-items: center;
+        padding: 8px 16px;
+        border: 1px solid $color-text-l;
+        border-radius: 100px;
+        color: $color-text-l;
+        .icon-add {
+          margin-right: 5px;
+          font-size: $font-size-small-s;
+        }
+        .text {
+          font-size: $font-size-small;
         }
       }
     }

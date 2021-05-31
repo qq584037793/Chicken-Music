@@ -110,6 +110,7 @@ import useMiddleIneractive from './use-middle-interactive'
 import ProgressBar from './progress-bar'
 import MiniPlayer from './mini-player'
 import useAnimation from './use-animation'
+import usePlayHistory from './use-play-history'
 import Scroll from '@/components/base/scroll/scroll'
 import { formatTime } from '@/assets/js/util'
 import { PLAY_MODE } from '@/assets/js/constant'
@@ -143,6 +144,7 @@ export default {
     const { currentLyric, currentLineNum, playLyric, stopLyric, lyricScrollRef, lyricListRef, pureMusicLyric, playingLyric } = useLyric({ songReady, currentTime })
     const { currentShow, middleLStyle, middleRStyle, onMiddleTouchStart, onMiddleTouchMove, onMiddleTouchEnd } = useMiddleIneractive()
     const { cdWrapperRef, enter, afterEnter, leave, afterLeave } = useAnimation()
+    const { savePlay } = usePlayHistory()
 
     // conputed
     const playlist = computed(() => store.state.playlist)
@@ -250,6 +252,7 @@ export default {
       }
       songReady.value = true
       playLyric() // 保证歌词同步
+      savePlay(currentSong.value)
     }
 
     function error () {
@@ -338,7 +341,9 @@ export default {
       enter,
       afterEnter,
       leave,
-      afterLeave
+      afterLeave,
+      // history
+      savePlay
     }
   }
 }
