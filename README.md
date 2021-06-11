@@ -7,7 +7,7 @@
 
 ## アプリケーションの概要
 
-Chicken Musicは一般的な音楽再生アプリ。　
+Chicken Musicは一般的な音楽再生アプリ。　demo動画:https://youtu.be/QkE6Gf6h_Dk 
 
 ## 技術的ポイント
 
